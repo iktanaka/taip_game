@@ -1,0 +1,68 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://obniz.com/js/jquery-3.2.1.min.js"></script>
+    <script src="https://unpkg.com/obniz/obniz.js"></script>
+  </head>
+  <body>
+    <div id="obniz-debug"></div>
+    <h1>Dust monitor using Obniz</h1>
+    <script>
+      const obniz = new Obniz("9431-1236");
+
+      let lowpulseoccupancy = 0;
+      let mode = "on";
+
+      function startloop() {
+        obniz.onloop = async function () {
+          if (mode === "on") {
+            obniz.measure.echo({
+              io_pulse: 6,
+              io_echo: 3,
+              pulse: "positive",
+              pulse_width: 0.1,
+              measure_edges: 2,
+              timeout: 1000,
+              callback: function (edges) {
+                if (
+                  edges.length === 2 &&
+                  edges[0].edge === false &&
+                  edges[1].edge === true
+                ) {
+                  lowpulseoccupancy = Math.floor(
+                    edges[1].timing - edges[0].timing
+                  );
+                  sends(lowpulseoccupancy);
+                  obniz.display.clear();
+                  obniz.display.print(lowpulseoccupancy);
+                }
+              }
+            });
+          }
+        };
+      }
+
+      obniz.onconnect = async function () {
+        obniz.display.clear();
+        obniz.display.print("Connected");
+        obniz.io0.output(false);
+        obniz.io1.output(true);
+        obniz.switch.onchange = function (state) {
+          if (state === "left") mode = "on";
+          if (state === "right") mode = "off";
+          if (state === "left" || state === "right") {
+            obniz.display.clear();
+            obniz.display.print(mode);
+          }
+        };
+
+        startloop();
+      };
+
+      function sends(data) {
+        console.log(data);
+        obniz.message(targets, data);
+      }
+    </script>
+  </body>
+</html>

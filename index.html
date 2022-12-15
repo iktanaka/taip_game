@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>タイピングゲーム</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Anton&family=DotGothic16&family=Kiwi+Maru&display=swap');
+    </style>
+    
+    <script>
+      //問題文
+      var question_A = [
+        "madohuki",
+        "souziki",
+        "hakisouzi",
+        "zoukingake",
+        "ohurosouzi",
+        "gomiwosuteru",
+        "heyawokatadukeru",
+        "omotyawokatadukeru",
+        "pikapikanimigaku",
+        "kitanaiienisiawasehakonai",
+        "heyawokiyomeyo",
+        "gomihamataguna",
+        "kireinaienibinnbounasi",
+        "kitanaiienikanemotinasi",
+        "souzihakokoromokireinisuru",
+        "asitayarouhabakayarou"
+      ];
+      var question_J = [
+        "窓ふき",
+        "掃除機",
+        "掃き掃除",
+        "ぞうきんがけ",
+        "お風呂掃除",
+        "ごみを捨てる",
+        "部屋を片付ける",
+        "おもちゃを片付ける",
+        "ピカピカに磨く",
+        "汚い家に幸せはこない",
+        "部屋を清めよ",
+        "ゴミはまたぐな",
+        "きれいな家に貧乏なし",
+        "汚い家に金持ちなし",
+        "掃除は心もキレイにする",
+        "明日やろうはばかやろう"
+      ];
+      var check = [];
+      var time_limit = 90;
+      var wordDisplay_A;
+      var wordDisplay_J;
+      var random;
+
+      //スコア表示
+      var score;
+      var c;
+      var mis;
+      var sei;
+
+      //レベル分け
+      var dust = 0;
+      var enemy = [120, 200, 280];
+      var enemylevel;
+
+      //効果音
+      var button_on = new Audio("sound/button_on.mp3");
+      var sei_typ = new Audio("sound/sei_typ.mp3");
+      var mis_typ = new Audio("sound/mis_typ.mp3");
+      var seikou_on = new Audio("sound/seikou_on.mp3");
+      var sippai_on = new Audio("sound/sippai_on.mp3");
+
+      window.onload = function () {
+        document.getElementById("modoru_button").style.display = "none";
+        document.getElementById("content").style.display = "none";
+        document.getElementById("waku").style.display = "none";
+        document.getElementById("enemy_img");
+
+        //スタートボタンを押した処理
+        var s_btn = document.getElementById("start_button");
+        s_btn.addEventListener("click",function () {
+            setTimeout(function () {
+              button_on.play();
+              countA();
+              document.getElementById("message").innerHTML　=　"スペースキーかEnterキーを押して下さい";
+              document.getElementById("waku").style.display = "block";
+              s_btn.style.display = "none";
+            }, 1000);
+
+            //15個のdust値を取得して、その値によってレベルを分ける
+            function countA() {
+              var sum = 0;
+              for (c = 0; c <= 15; c++) {
+                if (c <= 14) {
+                  dust = Math.random() * 200 + 50;
+                  sum += dust;
+                  console.log(dust);
+                } else if (c == 15) {
+                  console.log(dust);
+                  sum += dust;
+                  clearTimeout(dust);
+
+                  console.log(sum);
+
+                  //レベル分け
+                  if(sum < 2300) {
+                    enemylevel = 0;
+                    hokori.innerHTML = "レベル1";
+                    enemy_img.src = "enemy/enemy1.png";
+                  } else if (sum < 2500) {
+                    enemylevel = 1;
+                    hokori.innerHTML = "レベル2";
+                    enemy_img.src = "enemy/enemy2.png";
+                  } else if(sum < 2750) {
+                    enemylevel = 2;
+                    hokori.innerHTML = "レベル3";
+                    enemy_img.src = "enemy/enemy3.png";
+                  }
+                }
+              }
+            }
+          },{ once: true });
+
+        //スペースキーかEnterキーでゲームスタート
+        document.addEventListener("keydown", h_Keydown, { once: true });
+        function h_Keydown(event) {
+          document.getElementById("message").style.display = "none";
+          document.getElementById("content").style.display = "block";
+          var keycode = event.keyCode;
+          if (keycode == 13 || keycode == 32) {
+            gamestart();
+            button_on.play();
+          }
+        }
+
+        //ゲームスタート
+        function gamestart() {
+          questionDisplay();
+
+          //得点
+          score = 0;
+          mis = 0;
+          sei = 0;
+
+          var gametimer = setInterval(function () {
+            count.innerHTML = "残り時間：" + time_limit;
+            time_limit--;
+            if (time_limit < 0) {
+              clearInterval(gametimer);
+              finish();
+            }
+          }, 1000);
+        }
+
+        function questionDisplay() {
+          damage.innerHTML = "HP：" + enemy[enemylevel];
+          wordDisplay_A = document.getElementById("word_A");
+          random = Math.floor(Math.random() * question_A.length); //問題文をランダムに表示
+          word_J.innerHTML = question_J[random];
+          wordDisplay_A.textContent = ""; //一個ずつ消していく
+
+          check = question_A[random].split("").map(function (value) {
+            var span = document.createElement("span"); //一文字ずつ配列に入れる
+
+            span.textContent = value;
+            wordDisplay_A.appendChild(span);
+
+            return span;
+          });
+        }
+
+        //ゲーム終了
+        function finish() {
+          if (enemy[enemylevel] > 0) {
+            damage.innerHTML = "失敗";
+            coment.innerHTML = "ばい菌を倒せなかった…"
+            sippai_on.play();
+          } else {
+            damage.innerHTML = "成功";
+            coment.innerHTML = "ばい菌を倒した！！"
+            seikou_on.play();
+            document.getElementById("enemy_img").style.display = "none";
+            document.getElementById("hokori").style.display = "none";
+          }
+          score = Math.floor(Math.pow(sei, 2) * Math.pow(sei / (sei + mis), 5));
+          scoreint.innerHTML =
+            "スコア:" +
+            score +
+            "点" +
+            "<hr>正タイプ数:" +
+            sei +
+            "<br>ミスタイプ数:" +
+            mis +
+            "<br>正答率" +
+            ((sei / (sei + mis)) * 100).toFixed(1) +
+            "%";
+          document.getElementById("count").style.display = "none";
+          document.getElementById("word_J").style.display = "none";
+          document.getElementById("word_A").style.display = "none";
+          document.getElementById("modoru_button").style.display = "block";
+          
+          modoru_button.addEventListener('click', function(){
+            button_on.play();
+          });
+        }
+
+        //キーが押されたときの判定
+        document.addEventListener("keydown", keyDown);
+        function keyDown(event) {
+          var key = event.key;
+          //console.log(key);
+          if (key == check[0].textContent) {
+            check[0].className = "add-color"; //クラスを設定して、入力された文字に色を与える
+            sei++;
+            sei_typ.play();
+
+            check.shift();
+
+            if (!check.length) {
+              enemy[enemylevel] -= 10;
+              button_on.play();
+
+              if (enemy[enemylevel] == 0) {
+                time_limit = 0;
+                finish();
+              }
+              questionDisplay();
+            }
+          } else {
+            mis++;
+            mis_typ.play();
+          }
+        }
+      };
+    </script>
+  </head>
+
+  <body>
+    <main>
+      <div id="message">タイピングゲームでばい菌を倒そう！</div>
+      <div id="content">
+        <div id="count"></div>
+        <div id="word_J"></div>
+        <div id="word_A"></div>
+        <div id="damage"></div>
+      </div>
+      <button id="start_button">最初から</button>
+      <div id="waku">
+        <div id="scoreint"></div>
+        <div id="hokori"></div>
+        <img id="enemy_img"></img>
+        <p id="coment">ばい菌が出現した</p>
+        <p><button id="modoru_button" onclick="window.location.reload();">
+            戻る
+        </button></p>
+      </div>
+    </main>
+    <footer></footer>
+  </body>
+</html>

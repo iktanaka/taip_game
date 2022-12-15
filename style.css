@@ -1,0 +1,91 @@
+body {
+  text-align: center;
+  font-size: 2.5em;
+  font-family: "DotGothic16", sans-serif;
+  background: #33ccff;
+  /* height: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    #d76735 0,
+    #d76735 10px,
+    #fbd266 10px,
+    #fbd266 50px,
+    #8fb0a9 50px,
+    #8fb0a9 60px,
+    #737c3e 60px,
+    #737c3e 110px,
+    #f2d8b3 110px,
+    #f2d8b3 120px
+  );
+
+  background-attachment: fixed;
+  background-position: CENTER CENTER; */
+}
+
+main {
+  margin: 10px 10px;
+  padding: 20px 20px 20px 20px;
+  height: 100%;
+  text-align: CENTER;
+  color: #ffffff;
+  margin: auto 100px;
+  /* background-attachment: fixed;
+  background-position: CENTER CENTER; */
+}
+
+#message {
+  border: solid 7px #ffffff;
+  border-radius: 30px;
+  margin: auto auto 5px auto;
+  padding: 10px;
+}
+
+#content {
+  border: solid 7px #ffffff;
+  border-radius: 30px;
+  margin: auto auto 5px auto;
+  padding: 10px;
+  display: none;
+}
+
+#waku {
+  border: solid 7px #ffffff;
+  border-radius: 30px;
+  margin: auto auto 5px auto;
+  padding: 10px;
+  display: none;
+}
+
+#coment {
+  font-size: 0.7em;
+}
+
+button {
+  margin: 20px auto;
+  font-family: "DotGothic16", sans-serif;
+  border-radius: 12px;
+  border-color: #c0c0c0;
+  box-shadow: 2px 5px 1px #aaaaaa;
+  transition: 0.3s;
+  background-color: #fcc863;
+  height: 60px;
+  width: 120px;
+  color: #ffffff;
+  font-size: 0.5em;
+  /*text-align: CENTER;*/
+}
+
+img {
+  display: block;
+  margin: 0px auto;
+  /*text-align: CENTER;*/
+}
+
+footer {
+  margin-top: 10px;
+  height: 10%;
+}
+/*キーが押されたら、色が変わる*/
+.add-color {
+  color: red;
+}

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>タイピングゲーム</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="style.css" />
+    <script>
+      var question_A = [
+        "kitanaiienisiawasehakonai",
+        "heyawokiyomeyo",
+        "gomihamataguna",
+        "kireinaienibinnbounasi",
+        "kitanaiienikanemotinasi",
+        "asimotonogomihitotuhiroenuhodononingenninanigadekimasyouka",
+        "souzinohirosatohukasagasonohitonozinnkakutohireisuru"
+      ];
+      var question_J = [
+        "汚い家に幸せはこない",
+        "部屋を清めよ",
+        "ゴミはまたぐな",
+        "きれいな家に貧乏なし",
+        "汚い家に金持ちなし",
+        "足元のゴミひとつ拾えぬほどの人間に何ができましょうか",
+        "掃除の広さと深さがその人の人格と比例する"
+      ];
+      var check = [];
+      var time_limit = 30;
+      var wordDisplay_A;
+      var wordDisplay_J;
+      var random;
+      var score;
+      var mis;
+      var sei;
+
+      var dust = 0;
+      var enemy = [50, 100, 150];
+      var enemylevel;
+
+      window.onload = function () {
+        document.getElementById("modoru_button").style.visibility = "hidden";
+        document.getElementById("finish").style.visibility = "hidden";
+
+        //レベル分け
+        if (dust < 100) {
+          enemylevel = 0;
+        } else if (dust < 200) {
+          enemylevel = 1;
+        } else {
+          enemylevel = 2;
+        }
+
+        //スペースキーかEnterキーでスタート
+        document.addEventListener("keydown", h_Keydown, { once: true });
+        function h_Keydown(event) {
+          var keycode = event.keyCode;
+          if (keycode == 13 || keycode == 32) {
+            gamestart();
+          }
+        }
+
+        //スタートしてからの関数
+        function gamestart() {
+          document.getElementById("message").style.visibility = "hidden";
+          questionDisplay();
+          //得点
+          score = 0;
+          mis = 0;
+          sei = 0;
+
+          var gametimer = setInterval(function () {
+            count.innerHTML = "残り時間：" + time_limit;
+            time_limit--;
+            if (time_limit < 0) {
+              // <= から < に変更
+              clearInterval(gametimer);
+              finish();
+            }
+          }, 1000);
+        }
+
+        function questionDisplay() {
+          damage.innerHTML = enemy[enemylevel];
+
+          wordDisplay_A = document.getElementById("word_A");
+          random = Math.floor(Math.random() * question_A.length); //問題文をランダムに表示
+          word_J.innerHTML = question_J[random];
+
+          wordDisplay_A.textContent = ""; //一個ずつ消していく
+
+          check = question_A[random].split("").map(function (value) {
+            //一文字ずつ配列に入れる
+            var span = document.createElement("span");
+
+            span.textContent = value;
+            wordDisplay_A.appendChild(span);
+
+            return span;
+          });
+        }
+
+        function finish() {
+          if (enemy[enemylevel] > 0) {
+            damage.innerHTML = "失敗";
+          } else {
+            damage.innerHTML = "成功";
+          }
+          score = Math.floor(Math.pow(sei, 2) * Math.pow(sei / (sei + mis), 5));
+          scoreint.innerHTML =
+            "スコア:" +
+            score +
+            "点" +
+            "<hr>正タイプ数:" +
+            sei +
+            "<br>ミスタイプ数:" +
+            mis +
+            "<br>正答率" +
+            ((sei / (sei + mis)) * 100).toFixed(1) +
+            "%";
+          document.getElementById("count").style.visibility = "hidden";
+          document.getElementById("word_J").style.visibility = "hidden";
+          document.getElementById("word_A").style.visibility = "hidden";
+          document.getElementById("finish").style.visibility = "visible";
+          document.getElementById("modoru_button").style.visibility = "visible";
+        }
+
+        //キーが押されたときの判定
+        document.addEventListener("keydown", keyDown);
+        function keyDown(event) {
+          var key = event.key;
+          //console.log(key);
+          if (key == check[0].textContent) {
+            check[0].className = "add-color"; //クラスを設定して、入力された文字に色を与える
+            sei++;
+
+            check.shift();
+
+            if (!check.length) {
+              enemy[enemylevel] -= 10;
+
+              if (enemy[enemylevel] == 0) {
+                time_limit = 0;
+                finish();
+              }
+              questionDisplay();
+            }
+          } else {
+            mis++;
+          }
+        }
+      };
+    </script>
+  </head>
+  <body>
+    <main>
+      <div id="message">スペースキーかEnterキーを押して下さい</div>
+      <div id="count"></div>
+      <div id="word_J"></div>
+      <div id="word_A"></div>
+      <div id="finish">終わり</div>
+      <div id="damage"></div>
+      <div id="scoreint"></div>
+      <button id="modoru_button" onclick="window.location.reload();">
+        return
+      </button>
+    </main>
+    <footer></footer>
+  </body>
+</html>
